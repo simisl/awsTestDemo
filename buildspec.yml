@@ -20,6 +20,7 @@ phases:
       - cd ..
       - echo "Installing backend dependencies"
       - cd backend
+      - chmod +x mvnw
       - ./mvnw clean install -DskipTests
       - cd ..
 
