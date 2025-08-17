@@ -1,31 +1,39 @@
 version: 0.2
 
+env:
+  variables:
+    NODE_OPTIONS: "--openssl-legacy-provider"
+
 phases:
   install:
     runtime-versions:
-      java: corretto17
       nodejs: 20
+      java: corretto17
     commands:
-      - echo Installing Angular CLI
+      - echo "Installing Angular CLI"
       - npm install -g @angular/cli
-  pre_build:
-    commands:
-      - echo Installing frontend dependencies
+      - echo "Installing frontend dependencies"
       - cd frontend
-      - npm install
+      - npm ci
       - cd ..
+      - echo "Installing backend dependencies"
+      - cd backend
+      - ./mvnw clean install -DskipTests
+      - cd ..
+
   build:
     commands:
-      - echo Building Angular frontend
+      - echo "Building Angular frontend"
       - cd frontend
       - ng build --prod
       - cd ..
-      - echo Copying frontend build to Spring Boot static folder
+      - echo "Copying frontend build to Spring Boot static folder"
       - cp -r frontend/dist/* backend/src/main/resources/static/
-      - echo Building Spring Boot backend WAR
+      - echo "Building Spring Boot backend WAR"
       - cd backend
       - ./mvnw clean package
       - cd ..
+
 artifacts:
   files:
     - backend/target/ROOT.war
