@@ -3,14 +3,29 @@ version: 0.2
 phases:
   install:
     runtime-versions:
-      nodejs: 20 # or the version your Angular project uses
+      java: corretto17
+      nodejs: 20
     commands:
+      - echo Installing Angular CLI
       - npm install -g @angular/cli
+  pre_build:
+    commands:
+      - echo Installing frontend dependencies
+      - cd frontend
       - npm install
+      - cd ..
   build:
     commands:
+      - echo Building Angular frontend
       - cd frontend
       - ng build --prod
+      - cd ..
+      - echo Copying frontend build to Spring Boot static folder
+      - cp -r frontend/dist/* backend/src/main/resources/static/
+      - echo Building Spring Boot backend WAR
+      - cd backend
+      - ./mvnw clean package
+      - cd ..
 artifacts:
   files:
-    - frontend/dist/**/*
+    - backend/target/ROOT.war
