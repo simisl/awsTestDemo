@@ -10,6 +10,8 @@ phases:
       nodejs: 20
       java: corretto17
     commands:
+      - echo "Setting NODE_OPTIONS for OpenSSL legacy provider"
+      - export NODE_OPTIONS=--openssl-legacy-provider
       - echo "Installing Angular CLI"
       - npm install -g @angular/cli
       - echo "Installing frontend dependencies"
@@ -25,7 +27,7 @@ phases:
     commands:
       - echo "Building Angular frontend"
       - cd frontend
-      - ng build --prod
+      - ng build
       - cd ..
       - echo "Copying frontend build to Spring Boot static folder"
       - cp -r frontend/dist/* backend/src/main/resources/static/
