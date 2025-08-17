@@ -2,6 +2,9 @@ version: 0.2
 
 phases:
   install:
+    runtime-versions:
+      java: corretto17
+      nodejs: 20
     commands:
       - echo Installing frontend dependencies...
       - cd frontend
@@ -11,10 +14,10 @@ phases:
       - echo Building Angular frontend...
       - ng build --prod
       - cd ../backend
-      - echo Packaging Spring Boot backend...
+      - echo Copying Angular build into Spring Boot static folder...
+      - cp -r ../frontend/dist/frontend/* src/main/resources/static/
+      - echo Packaging Spring Boot backend as WAR...
       - mvn clean package
-      - cp -r ../frontend/dist/* src/main/resources/static/
-      - mvn package
 artifacts:
   files:
     - backend/target/ROOT.war
