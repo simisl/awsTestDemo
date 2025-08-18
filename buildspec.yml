@@ -26,11 +26,20 @@ phases:
       - cd frontend
       - ng build
       - cd ..
+      - echo "Check Angular dist output"
+      - ls -l frontend/dist/
+      - ls -l frontend/dist/* || true
+      - echo "Prepare backend static folder"
+      - mkdir -p backend/src/main/resources/static
       - echo "Copying frontend build to backend static folder"
-      - cp -r frontend/dist/frontend/* backend/src/main/resources/static/
+      - cp -r frontend/dist/*/* backend/src/main/resources/static/
+      - echo "Verify static folder contents"
+      - ls -l backend/src/main/resources/static/
       - echo "Building Spring Boot WAR"
       - cd backend
       - ./mvnw clean package -DskipTests
+      - echo "Verify WAR contains Angular index.html"
+      - jar tf target/ROOT.war | grep index.html || true
       - cd ..
 
 artifacts:
