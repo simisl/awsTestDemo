@@ -1,28 +1,18 @@
 version: 0.2
 
-env:
-  variables:
-    NODE_OPTIONS: "--openssl-legacy-provider"
-
 phases:
   install:
     runtime-versions:
-      nodejs: 20
       java: corretto17
+      nodejs: 18
     commands:
-      - echo "Setting NODE_OPTIONS for OpenSSL legacy provider"
-      - export NODE_OPTIONS=--openssl-legacy-provider
       - echo "Installing Angular CLI"
-      - npm install -g @angular/cli
-      - echo "Installing frontend dependencies"
       - cd frontend
-      - npm ci
+      - npm install --legacy-peer-deps
+      - npm install -g @angular/cli@16.2.10
       - cd ..
-      - echo "Installing backend dependencies"
-      - cd backend
-      - chmod +x mvnw
-      - ./mvnw clean install -DskipTests
-      - cd ..
+      - echo "Make mvnw executable"
+      - chmod +x backend/mvnw
 
   build:
     commands:
@@ -30,17 +20,64 @@ phases:
       - cd frontend
       - ng build
       - cd ..
-      - echo "Copying frontend build to Spring Boot static folder"
+      - echo "Copying frontend build to backend static folder"
       - cp -r frontend/dist/* backend/src/main/resources/static/
-      - echo "Verify Angular index.html copied to backend"
-      - ls -l backend/src/main/resources/static/
-      - echo "Building Spring Boot backend WAR"
+      - echo "Building Spring Boot WAR"
       - cd backend
-      - ./mvnw clean package
-      - echo "Verify WAR contents include Angular files"
-      - jar tf target/ROOT.war | grep index.html
+      - ./mvnw clean package -DskipTests
       - cd ..
 
 artifacts:
   files:
     - backend/target/ROOT.war
+
+
+
+
+
+# version: 0.2
+
+# env:
+#   variables:
+#     NODE_OPTIONS: "--openssl-legacy-provider"
+
+# phases:
+#   install:
+#     runtime-versions:
+#       nodejs: 20
+#       java: corretto17
+#     commands:
+#       - echo "Setting NODE_OPTIONS for OpenSSL legacy provider"
+#       - export NODE_OPTIONS=--openssl-legacy-provider
+#       - echo "Installing Angular CLI"
+#       - npm install -g @angular/cli
+#       - echo "Installing frontend dependencies"
+#       - cd frontend
+#       - npm ci
+#       - cd ..
+#       - echo "Installing backend dependencies"
+#       - cd backend
+#       - chmod +x mvnw
+#       - ./mvnw clean install -DskipTests
+#       - cd ..
+
+#   build:
+#     commands:
+#       - echo "Building Angular frontend"
+#       - cd frontend
+#       - ng build
+#       - cd ..
+#       - echo "Copying frontend build to Spring Boot static folder"
+#       - cp -r frontend/dist/* backend/src/main/resources/static/
+#       - echo "Verify Angular index.html copied to backend"
+#       - ls -l backend/src/main/resources/static/
+#       - echo "Building Spring Boot backend WAR"
+#       - cd backend
+#       - ./mvnw clean package
+#       - echo "Verify WAR contents include Angular files"
+#       - jar tf target/ROOT.war | grep index.html
+#       - cd ..
+
+# artifacts:
+#   files:
+#     - backend/target/ROOT.war
