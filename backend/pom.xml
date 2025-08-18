@@ -56,31 +56,31 @@
 				<groupId>org.springframework.boot</groupId>
 				<artifactId>spring-boot-maven-plugin</artifactId>
 			</plugin>
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-resources-plugin</artifactId>
-				<executions>
-					<execution>
-						<id>copy-resources</id>
-						<phase>validate</phase>
-						<goals>
-							<goal>copy-resources</goal>
-						</goals>
-						<configuration>
-<!--							<outputDirectory>${project.build.directory}/classes/static/</outputDirectory>-->
-							<outputDirectory>${project.basedir}/src/main/webapp/</outputDirectory>
-							<resources>
-								<resource>
-									<directory>../frontend/dist/</directory>
-									<includes>
-										<include>**/*</include>
-									</includes>
-								</resource>
-							</resources>
-						</configuration>
-					</execution>
-				</executions>
-			</plugin>
+<!--			<plugin>-->
+<!--				<groupId>org.apache.maven.plugins</groupId>-->
+<!--				<artifactId>maven-resources-plugin</artifactId>-->
+<!--				<executions>-->
+<!--					<execution>-->
+<!--						<id>copy-resources</id>-->
+<!--						<phase>validate</phase>-->
+<!--						<goals>-->
+<!--							<goal>copy-resources</goal>-->
+<!--						</goals>-->
+<!--						<configuration>-->
+<!--&lt;!&ndash;							<outputDirectory>${project.build.directory}/classes/static/</outputDirectory>&ndash;&gt;-->
+<!--							<outputDirectory>${project.basedir}/src/main/webapp/</outputDirectory>-->
+<!--							<resources>-->
+<!--								<resource>-->
+<!--									<directory>../frontend/dist/</directory>-->
+<!--									<includes>-->
+<!--										<include>**/*</include>-->
+<!--									</includes>-->
+<!--								</resource>-->
+<!--							</resources>-->
+<!--						</configuration>-->
+<!--					</execution>-->
+<!--				</executions>-->
+<!--			</plugin>-->
 		</plugins>
 	</build>
 
