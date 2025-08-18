@@ -84,7 +84,7 @@ phases:
       - ng build
       - cd ..
       - echo "Copying frontend build to Spring Boot static folder"
-      - cp -r frontend/dist/* backend/src/main/resources/static/
+      # - cp -r frontend/dist/* backend/src/main/resources/static/
       - echo "Verify Angular index.html copied to backend"
       - ls -l backend/src/main/resources/static/
       - echo "Building Spring Boot backend WAR"
