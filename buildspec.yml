@@ -33,6 +33,7 @@ phases:
       - mkdir -p backend/src/main/resources/static
       - echo "Copying frontend build to backend static folder"
       - cp -r frontend/dist/frontend/* backend/src/main/resources/static/
+      - rm -rf backend/src/main/resources/static/frontend
 
       - echo "Adding Elastic Beanstalk welcome-file config"
       - mkdir -p backend/.ebextensions
