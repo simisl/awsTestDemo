@@ -1,11 +1,17 @@
 version: 0.2
 
+env:
+  variables:
+    NODE_OPTIONS: "--openssl-legacy-provider"
+
 phases:
   install:
     runtime-versions:
       java: corretto17
       nodejs: 18
     commands:
+      - echo "Setting NODE_OPTIONS for OpenSSL legacy provider"
+      - export NODE_OPTIONS=--openssl-legacy-provider
       - echo "Installing Angular CLI"
       - cd frontend
       - npm install --legacy-peer-deps
