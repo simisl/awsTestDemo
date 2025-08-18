@@ -10,36 +10,31 @@ phases:
       nodejs: 20
       java: corretto17
     commands:
-      - echo "Setting NODE_OPTIONS for OpenSSL legacy provider"
-      - export NODE_OPTIONS=--openssl-legacy-provider
       - echo "Installing Angular CLI"
       - npm install -g @angular/cli
       - echo "Installing frontend dependencies"
       - cd frontend
       - npm ci
       - cd ..
-      - echo "Installing backend dependencies"
+
+  build:
+    commands:
+      - echo "Building Angular frontend into backend webapp"
+      - cd frontend
+      - ng build --configuration production
+      - cd ..
+      - echo "Building Spring Boot backend WAR"
       - cd backend
       - chmod +x mvnw
-      - ./mvnw clean install -DskipTests
+      - ./mvnw clean package -DskipTests
+      - echo "Verify WAR contents include Angular files"
+      - jar tf target/ROOT.war | grep index.html || echo "index.html not found!"
       - cd ..
-
-build:
-  commands:
-    - echo "Building Angular frontend directly into backend webapp"
-    - cd frontend
-    - ng build --configuration production
-    - cd ..
-    - echo "Building Spring Boot backend WAR"
-    - cd backend
-    - ./mvnw clean package -DskipTests
-    - echo "Verify WAR contents include Angular files"
-    - jar tf target/ROOT.war | grep index.html || echo "index.html not found!"
-    - cd ..
 
 artifacts:
   files:
     - backend/target/ROOT.war
+
 
 
 
