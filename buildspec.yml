@@ -83,11 +83,11 @@ phases:
       - cd frontend
       - ng build
       - cd ..
-      - echo "Copying frontend build to Spring Boot static folder"
+      # - echo "Copying frontend build to Spring Boot static folder"
       # - cp -r frontend/dist/* backend/src/main/resources/static/
-      - echo "Verify Angular index.html copied to backend"
-      - ls -l backend/src/main/resources/static/
-      - echo "Building Spring Boot backend WAR"
+      # - echo "Verify Angular index.html copied to backend"
+      # - ls -l backend/src/main/resources/static/
+      # - echo "Building Spring Boot backend WAR"
       - cd backend
       - ./mvnw clean package
       - echo "Verify WAR contents include Angular files"
