@@ -24,15 +24,33 @@ phases:
     commands:
       - echo "Building Angular frontend"
       - cd frontend
-      - ng build
+      - ng build --output-path=dist/frontend --configuration=production
       - cd ..
       - echo "Check Angular dist output"
-      - ls -l frontend/dist/
       - ls -l frontend/dist/frontend/ || true
+
       - echo "Prepare backend static folder"
       - mkdir -p backend/src/main/resources/static
       - echo "Copying frontend build to backend static folder"
       - cp -r frontend/dist/frontend/* backend/src/main/resources/static/
+
+      - echo "Adding Elastic Beanstalk welcome-file config"
+      - mkdir -p backend/.ebextensions
+      - |
+        cat > backend/.ebextensions/welcome-file.config <<EOL
+        files:
+          "/etc/tomcat/conf.d/welcome-file.conf":
+            mode: "000644"
+            owner: root
+            group: root
+            content: |
+              <Context>
+                <WelcomeFileList>
+                  <WelcomeFile>index.html</WelcomeFile>
+                </WelcomeFileList>
+              </Context>
+        EOL
+
       - echo "Verify static folder contents"
       - ls -l backend/src/main/resources/static/
       - echo "Building Spring Boot WAR"
@@ -46,6 +64,7 @@ phases:
 artifacts:
   files:
     - backend/target/ROOT.war
+
 
 
 
