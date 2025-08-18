@@ -27,7 +27,7 @@ phases:
       - ng build --configuration production
       - cd ..
       - echo "Prepare backend static folder"
-      - rm -rf backend/src/main/resources/static/*
+      - rm -rf backend/src/main/resources/static
       - mkdir -p backend/src/main/resources/static
       - echo "Copying Angular build into backend static folder"
       - cp -r frontend/dist/frontend/* backend/src/main/resources/static/
