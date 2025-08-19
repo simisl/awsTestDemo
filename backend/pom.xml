@@ -67,8 +67,8 @@
 							<goal>copy-resources</goal>
 						</goals>
 						<configuration>
-							<outputDirectory>${project.build.directory}/classes/static/</outputDirectory>
-<!--							<outputDirectory>${project.basedir}/src/main/webapp/</outputDirectory>-->
+<!--							<outputDirectory>${project.build.directory}/classes/static/</outputDirectory> use it for java embedded tomcat for external tomcat like aws tomcat platform use below approach both work but select the respective command-->
+							<outputDirectory>${project.basedir}/src/main/webapp/</outputDirectory>
 							<resources>
 								<resource>
 									<directory>../frontend/dist/</directory>
