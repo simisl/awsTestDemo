@@ -139,3 +139,4 @@ phases:
 artifacts:
   files:
     - backend/target/ROOT.war
+  discard-paths: yes
