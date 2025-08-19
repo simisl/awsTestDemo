@@ -13,7 +13,7 @@ export class AppComponent {
   constructor(private http: HttpClient){}
 
   callApi() {
-    this.http.get('http://192.168.1.131:8080/api/health/page').subscribe((x:any)=>{
+    this.http.get('http://awstest.eu-north-1.elasticbeanstalk.com/api/health/page').subscribe((x:any)=>{
       console.log(x)
       this.message = x.message;
     })
