@@ -10,27 +10,24 @@ permissions:
 jobs:
   deploy:
     runs-on: ubuntu-latest
-    # If your secrets are in 'Repository Secrets', try commenting out the line below 
-    # to see if the 'production' environment is blocking access.
-    environment: production 
+    # REMOVED 'environment: production' to ensure Repository Secrets are visible
 
     steps:
       - name: Get current date and time
         id: datetime
         run: echo "now=$(date +'%Y-%m-%d %H:%M:%S')" >> $GITHUB_OUTPUT
     
-      - name: Slack Notification - Start
+      - name: Slack Notification
         uses: slackapi/slack-github-action@v1.24.0
         with:
+          # This forces the ID directly into the Slack API call
           payload: |
             {
               "channel": "${{ secrets.SLACK_CHANNEL_ID }}",
-              "text": "Deployment started on AZURE TEST SERVER on ${{ steps.datetime.outputs.now }} by ${{ github.actor }}. Testing sample notification."
+              "text": "Deployment started on AZURE TEST SERVER on ${{ steps.datetime.outputs.now }} by ${{ github.actor }}."
             }
         env:
           SLACK_BOT_TOKEN: ${{ secrets.SLACK_BOT_TOKEN }}
-          # We include it here as well just to be 100% safe
-          SLACK_CHANNEL_ID: ${{ secrets.SLACK_CHANNEL_ID }}
 
       - name: Create Deployment
         uses: bobheadxi/deployments@v1
