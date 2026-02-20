@@ -5,14 +5,16 @@ on:
 
 permissions:
   contents: read
-  deployments: write   # 👈 VERY IMPORTANT
+  deployments: write
 
 jobs:
   deploy:
     runs-on: ubuntu-latest
     steps:
       - name: Simulate Deployment
-        run: echo "Deploying..."
+        run: |
+          echo "Deploying..."
+          exit 1   # simulate failure
 
       - name: Create Deployment
         uses: bobheadxi/deployments@v1
@@ -21,10 +23,11 @@ jobs:
           env: test
           token: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Mark Deployment Success
+      - name: Finish Deployment
+        if: always()   # 👈 VERY IMPORTANT
         uses: bobheadxi/deployments@v1
         with:
           step: finish
-          status: success
+          status: ${{ job.status }}   # 👈 auto success/failure
           env: test
           token: ${{ secrets.GITHUB_TOKEN }}
