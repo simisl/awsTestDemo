@@ -27,7 +27,7 @@ jobs:
               "text": "Deployment started on AZURE TEST SERVER on ${{ steps.datetime.outputs.now }} by ${{ github.actor }}."
             }
         env:
-          SLACK_BOT_TOKEN: ${{ secrets.SLACK_BOT_TOKEN }}
+          SLACK_BOT_TOKEN: "xoxb-10577583067520-10566185548497-dh2Gqn7aUw5ua3CvUUvo8JQ6"
 
       - name: Create Deployment
         uses: bobheadxi/deployments@v1
