@@ -23,7 +23,7 @@ jobs:
           # This forces the ID directly into the Slack API call
           payload: |
             {
-              "channel": "${{ secrets.SLACK_CHANNEL_ID }}",
+              "channel": "C0AG38KDGQ6",
               "text": "Deployment started on AZURE TEST SERVER on ${{ steps.datetime.outputs.now }} by ${{ github.actor }}."
             }
         env:
