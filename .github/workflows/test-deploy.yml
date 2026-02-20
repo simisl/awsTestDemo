@@ -25,7 +25,6 @@ jobs:
         with:
           payload: |
             {
-              "channel": "${{secrets.SLACK_CHANNEL_ID}}",
               "text": "Deployment started on AZURE TEST SERVER on ${{ steps.datetime.outputs.now }} by ${{ github.actor }}."
             }
             
