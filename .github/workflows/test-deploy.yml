@@ -10,11 +10,19 @@ permissions:
 jobs:
   deploy:
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      deployments: write
+
+    environment: production  # important for GitHub deployment events
+
     steps:
-      - name: Simulate Deployment
+      - name: Build & Deploy
         run: |
-          echo "Deploying..."
-          exit 1   # simulate failure
+          # (your deployment commands here)
+
+      - name: Notify Deployment (Slack via GitHub)
+        run: echo "Deployment done"
 
       - name: Create Deployment
         uses: bobheadxi/deployments@v1
