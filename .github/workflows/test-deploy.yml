@@ -20,8 +20,8 @@ jobs:
       - name: Slack Notification
         uses: slackapi/slack-github-action@v1.24.0
         env:
-          SLACK_BOT_TOKEN: ${{ secrets.SLACK_BOT_TOKEN }}
-          SLACK_CHANNEL_ID: ${{secrets.SLACK_CHANNEL_ID}}
+          SLACK_BOT_TOKEN: "C0AG38KDGQ6"
+          SLACK_CHANNEL_ID: "xoxb-10577583067520-10566185548497-dh2Gqn7aUw5ua3CvUUvo8JQ6"
         with:
           payload: |
             {
