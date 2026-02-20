@@ -7,22 +7,27 @@ permissions:
   contents: read
   deployments: write
 
+env:
+  SLACK_BOT_TOKEN: ${{ secrets.SLACK_BOT_TOKEN }} # Indented 2 spaces
+  SLACK_CHANNEL_ID: ${{ secrets.SLACK_CHANNEL_ID }} # Indented 2 spaces
+
 jobs:
   deploy:
     runs-on: ubuntu-latest
-    permissions:
-      contents: read
-      deployments: write
-
-    environment: production  # important for GitHub deployment events
+    environment: production
 
     steps:
-      - name: Build & Deploy
-        run: |
-          # (your deployment commands here)
-
-      - name: Notify Deployment (Slack via GitHub)
-        run: echo "Deployment done"
+      - name: Get current date and time
+        id: datetime
+        run: echo "now=$(date +'%Y-%m-%d %H:%M:%S')" >> $GITHUB_OUTPUT
+    
+      - name: Slack Notification - Start
+        uses: slackapi/slack-github-action@v1.24.0
+        with:
+          payload: |
+            {
+              "text": "Deployment started on AZURE TEST SERVER on ${{ steps.datetime.outputs.now }} by ${{ github.actor }}. Testing sample notification."
+            }
 
       - name: Create Deployment
         uses: bobheadxi/deployments@v1
@@ -32,10 +37,10 @@ jobs:
           token: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Finish Deployment
-        if: always()   # 👈 VERY IMPORTANT
+        if: always()
         uses: bobheadxi/deployments@v1
         with:
           step: finish
-          status: ${{ job.status }}   # 👈 auto success/failure
+          status: ${{ job.status }}
           env: test
           token: ${{ secrets.GITHUB_TOKEN }}
