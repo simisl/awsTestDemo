@@ -3,6 +3,10 @@ name: Test Deployment
 on:
   workflow_dispatch:
 
+permissions:
+  contents: read
+  deployments: write   # 👈 VERY IMPORTANT
+
 jobs:
   deploy:
     runs-on: ubuntu-latest
