@@ -1,0 +1,26 @@
+name: Test Deployment
+
+on:
+  workflow_dispatch:
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Simulate Deployment
+        run: echo "Deploying..."
+
+      - name: Create Deployment
+        uses: bobheadxi/deployments@v1
+        with:
+          step: start
+          env: test
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Mark Deployment Success
+        uses: bobheadxi/deployments@v1
+        with:
+          step: finish
+          status: success
+          env: test
+          token: ${{ secrets.GITHUB_TOKEN }}
