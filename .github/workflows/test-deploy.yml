@@ -25,7 +25,7 @@ jobs:
           channel-id: ${{ secrets.SLACK_CHANNEL_ID }}
           payload: |
             {
-              "text": "Deployment started on AZURE TEST SERVER on ${{ steps.datetime.outputs.now }} by ${{ github.actor }}."
+              "text": "Deployment started on AZURE TEST SERVER by ${{ github.actor }} at <!date^${{ steps.datetime.outputs.now }}^{date_num} {time_secs}|${{ steps.datetime.outputs.now }}>"
             }
             
       - name: Create Deployment
@@ -43,3 +43,30 @@ jobs:
           status: ${{ job.status }}
           env: test
           token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Finish Deployment
+        if: always()
+        uses: bobheadxi/deployments@v1
+        with:
+          step: finish
+          status: ${{ job.status }}
+          env: test
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      # Add this step below 'Finish Deployment'
+      - name: Slack Final Status
+        if: always() # Ensures this runs even if the deployment fails
+        uses: slackapi/slack-github-action@v1.24.0
+        env:
+          SLACK_BOT_TOKEN: ${{ secrets.SLACK_BOT_TOKEN }}
+        with:
+          channel-id: ${{ secrets.SLACK_CHANNEL_ID }}
+          payload: |
+            {
+              "attachments": [
+                {
+                  "color": "${{ job.status == 'success' && '#36a64f' || '#ff0000' }}",
+                  "text": "Deployment *${{ job.status }}*! \nServer: AZURE TEST \nActor: ${{ github.actor }}"
+                }
+              ]
+            }
