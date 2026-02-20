@@ -28,7 +28,7 @@
 #       - chmod +x mvnw
 #       - ./mvnw clean package -DskipTests
 #       - echo "Verify WAR contents include Angular files"
-#       - jar tf target/ROOT.war | grep index.html || echo "index.html not found!"
+#       - jar tf target/ROOT.war | grep index.html || echo "index.html not found"
 #       - cd ..
 
 # artifacts:
