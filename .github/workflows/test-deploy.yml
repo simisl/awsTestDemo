@@ -16,16 +16,22 @@ jobs:
       - name: Get current date and time
         id: datetime
         run: echo "now=$(date +'%Y-%m-%d %H:%M:%S')" >> $GITHUB_OUTPUT
+
+      - name: Get UNIX timestamp
+        id: unixtime
+        run: echo "now=$(date +%s)" >> $GITHUB_OUTPUT
     
-      - name: Slack Notification
+      - name: Slack Notification - Start
         uses: slackapi/slack-github-action@v1.24.0
         env:
           SLACK_BOT_TOKEN: ${{ secrets.SLACK_BOT_TOKEN }}
         with:
-          channel-id: ${{ secrets.SLACK_CHANNEL_ID }}
+          channel_id: ${{ secrets.SLACK_CHANNEL_ID }}
           payload: |
             {
-              "text": "Deployment started on AZURE TEST SERVER by ${{ github.actor }} at <!date^${{ steps.datetime.outputs.now }}^{date_num} {time_secs}|${{ steps.datetime.outputs.now }}>"
+              "text": "Deployment started on AZURE TEST SERVER\nRUN BY: *${{ github.actor && github.actor.toUpperCase() }}*" +
+       "${{ github.event.pull_request ? ' (merged from ' + github.event.pull_request.user.login.toUpperCase() + ')' : '' }}" +
+       "\nTIME: <!date^${{ steps.unixtime.outputs.now }}^{date_num} {time_secs}|${{ steps.unixtime.outputs.now }}>"
             }
             
       - name: Create Deployment
@@ -44,29 +50,22 @@ jobs:
           env: test
           token: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Finish Deployment
-        if: always()
-        uses: bobheadxi/deployments@v1
-        with:
-          step: finish
-          status: ${{ job.status }}
-          env: test
-          token: ${{ secrets.GITHUB_TOKEN }}
-
-      # Add this step below 'Finish Deployment'
       - name: Slack Final Status
-        if: always() # Ensures this runs even if the deployment fails
+        if: always() # Runs even if deployment fails
         uses: slackapi/slack-github-action@v1.24.0
         env:
           SLACK_BOT_TOKEN: ${{ secrets.SLACK_BOT_TOKEN }}
         with:
-          channel-id: ${{ secrets.SLACK_CHANNEL_ID }}
+          channel_id: ${{ secrets.SLACK_CHANNEL_ID }}
           payload: |
             {
               "attachments": [
                 {
                   "color": "${{ job.status == 'success' && '#36a64f' || '#ff0000' }}",
-                  "text": "Deployment *${{ job.status }}*! \nServer: AZURE TEST \nActor: ${{ github.actor }}"
+                  "text": "*DEPLOYMENT ${{ job.status && job.status.toUpperCase() }}!* \n" +
+                          "SERVER: AZURE TEST SERVER\n" +
+                          "RUN BY: *${{ github.actor && github.actor.toUpperCase() }}*" +
+                          "${{ github.event.pull_request ? ' (merged from ' + github.event.pull_request.user.login.toUpperCase() + ')' : '' }}"
                 }
               ]
             }
