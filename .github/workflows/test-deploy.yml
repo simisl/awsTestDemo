@@ -20,10 +20,19 @@ jobs:
         id: unixtime
         run: echo "now=$(date +%s)" >> $GITHUB_OUTPUT
 
-      # Optional: make actor uppercase in bash
       - name: Get actor uppercase
         id: actor
         run: echo "name=$(echo $GITHUB_ACTOR | tr '[:lower:]' '[:upper:]')" >> $GITHUB_OUTPUT
+
+      - name: Get merged from (if PR)
+        id: prinfo
+        run: |
+          if [ ! -z "$GITHUB_EVENT_PULL_REQUEST_NUMBER" ]; then
+            echo "merged=' (merged from $(jq -r .pull_request.user.login < $GITHUB_EVENT_PATH | tr '[:lower:]' '[:upper:]'))'"
+          else
+            echo "merged=''"
+          fi
+          echo "merged=$merged" >> $GITHUB_OUTPUT
 
       - name: Slack Notification - Start
         uses: slackapi/slack-github-action@v1.24.0
@@ -33,7 +42,7 @@ jobs:
           channel_id: ${{ secrets.SLACK_CHANNEL_ID }}
           payload: |
             {
-              "text": "Deployment started on AZURE TEST SERVER\nRUN BY: *${{ steps.actor.outputs.name }}*${{ github.event.pull_request && ' (merged from ' + github.event.pull_request.user.login + ')' || '' }}\nTIME: <!date^${{ steps.unixtime.outputs.now }}^{date_num} {time_secs}|${{ steps.unixtime.outputs.now }}>"
+              "text": "Deployment started on AZURE TEST SERVER\nRUN BY: *${{ steps.actor.outputs.name }}*${{ steps.prinfo.outputs.merged }}\nTIME: <!date^${{ steps.unixtime.outputs.now }}^{date_num} {time_secs}|${{ steps.unixtime.outputs.now }}>"
             }
 
       - name: Create Deployment
@@ -64,7 +73,7 @@ jobs:
               "attachments": [
                 {
                   "color": "${{ job.status == 'success' && '#36a64f' || '#ff0000' }}",
-                  "text": "*DEPLOYMENT ${{ job.status }}!*\nSERVER: AZURE TEST SERVER\nRUN BY: *${{ steps.actor.outputs.name }}*${{ github.event.pull_request && ' (merged from ' + github.event.pull_request.user.login + ')' || '' }}"
+                  "text": "*DEPLOYMENT ${{ job.status }}!*\nSERVER: AZURE TEST SERVER\nRUN BY: *${{ steps.actor.outputs.name }}*${{ steps.prinfo.outputs.merged }}"
                 }
               ]
             }
