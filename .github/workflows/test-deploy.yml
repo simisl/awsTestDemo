@@ -20,6 +20,11 @@ jobs:
         id: unixtime
         run: echo "now=$(date +%s)" >> $GITHUB_OUTPUT
 
+      # Optional: make actor uppercase in bash
+      - name: Get actor uppercase
+        id: actor
+        run: echo "name=$(echo $GITHUB_ACTOR | tr '[:lower:]' '[:upper:]')" >> $GITHUB_OUTPUT
+
       - name: Slack Notification - Start
         uses: slackapi/slack-github-action@v1.24.0
         env:
@@ -28,7 +33,7 @@ jobs:
           channel_id: ${{ secrets.SLACK_CHANNEL_ID }}
           payload: |
             {
-              "text": "Deployment started on AZURE TEST SERVER\nRUN BY: *${{ github.actor && github.actor.toUpperCase() }}*${{ github.event.pull_request && ' (merged from ' + github.event.pull_request.user.login.toUpperCase() + ')' || '' }}\nTIME: <!date^${{ steps.unixtime.outputs.now }}^{date_num} {time_secs}|${{ steps.unixtime.outputs.now }}>"
+              "text": "Deployment started on AZURE TEST SERVER\nRUN BY: *${{ steps.actor.outputs.name }}*${{ github.event.pull_request && ' (merged from ' + github.event.pull_request.user.login + ')' || '' }}\nTIME: <!date^${{ steps.unixtime.outputs.now }}^{date_num} {time_secs}|${{ steps.unixtime.outputs.now }}>"
             }
 
       - name: Create Deployment
@@ -59,7 +64,7 @@ jobs:
               "attachments": [
                 {
                   "color": "${{ job.status == 'success' && '#36a64f' || '#ff0000' }}",
-                  "text": "*DEPLOYMENT ${{ job.status && job.status.toUpperCase() }}!*\nSERVER: AZURE TEST SERVER\nRUN BY: *${{ github.actor && github.actor.toUpperCase() }}*${{ github.event.pull_request && ' (merged from ' + github.event.pull_request.user.login.toUpperCase() + ')' || '' }}"
+                  "text": "*DEPLOYMENT ${{ job.status }}!*\nSERVER: AZURE TEST SERVER\nRUN BY: *${{ steps.actor.outputs.name }}*${{ github.event.pull_request && ' (merged from ' + github.event.pull_request.user.login + ')' || '' }}"
                 }
               ]
             }
