@@ -37,7 +37,7 @@ jobs:
           channel-id: ${{ secrets.SLACK_CHANNEL_ID }}
           payload: |
             {
-              "text": "Deployment started on AZURE TEST SERVER\nRUN BY: *${{ steps.format.outputs.actor_up }}*${{ steps.format.outputs.merged }}\nTIME: <!date^${{ steps.unixtime.outputs.now }}^{date_num} {time_secs}|${{ steps.unixtime.outputs.now }}>"
+              "text": "Deployment started on *AZURE TEST SERVER*\nRUN BY: *${{ steps.format.outputs.actor_up }}*${{ steps.format.outputs.merged }}\nTIME: <!date^${{ steps.unixtime.outputs.now }}^{date_num} {time_secs}|${{ steps.unixtime.outputs.now }}>"
             }
             
       - name: Create Deployment
