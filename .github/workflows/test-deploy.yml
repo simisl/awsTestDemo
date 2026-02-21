@@ -12,39 +12,34 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Get current date and time
-        id: datetime
-        run: echo "now=$(date +'%Y-%m-%d %H:%M:%S')" >> $GITHUB_OUTPUT
-
       - name: Get UNIX timestamp
         id: unixtime
         run: echo "now=$(date +%s)" >> $GITHUB_OUTPUT
 
-      - name: Get actor uppercase
-        id: actor
-        run: echo "name=$(echo $GITHUB_ACTOR | tr '[:lower:]' '[:upper:]')" >> $GITHUB_OUTPUT
-
-      - name: Get merged from (if PR)
-        id: prinfo
+      - name: Prepare Formatting
+        id: format
         run: |
-          if [ ! -z "$GITHUB_EVENT_PULL_REQUEST_NUMBER" ]; then
-            echo "merged=' (merged from $(jq -r .pull_request.user.login < $GITHUB_EVENT_PATH | tr '[:lower:]' '[:upper:]'))'"
+          # Uppercase Actor
+          echo "actor_up=$(echo ${{ github.actor }} | tr '[:lower:]' '[:upper:]')" >> $GITHUB_OUTPUT
+          # Handle PR logic
+          if [ "${{ github.event_name }}" == "pull_request" ]; then
+            PR_USER=$(echo ${{ github.event.pull_request.user.login }} | tr '[:lower:]' '[:upper:]')
+            echo "merged= (MERGED FROM $PR_USER)" >> $GITHUB_OUTPUT
           else
-            echo "merged=''"
+            echo "merged=" >> $GITHUB_OUTPUT
           fi
-          echo "merged=$merged" >> $GITHUB_OUTPUT
 
       - name: Slack Notification - Start
         uses: slackapi/slack-github-action@v1.24.0
         env:
           SLACK_BOT_TOKEN: ${{ secrets.SLACK_BOT_TOKEN }}
         with:
-          channel_id: ${{ secrets.SLACK_CHANNEL_ID }}
+          channel-id: ${{ secrets.SLACK_CHANNEL_ID }}
           payload: |
             {
-              "text": "Deployment started on AZURE TEST SERVER\nRUN BY: *${{ steps.actor.outputs.name }}*${{ steps.prinfo.outputs.merged }}\nTIME: <!date^${{ steps.unixtime.outputs.now }}^{date_num} {time_secs}|${{ steps.unixtime.outputs.now }}>"
+              "text": "Deployment started on AZURE TEST SERVER\nRUN BY: *${{ steps.format.outputs.actor_up }}*${{ steps.format.outputs.merged }}\nTIME: <!date^${{ steps.unixtime.outputs.now }}^{date_num} {time_secs}|${{ steps.unixtime.outputs.now }}>"
             }
-
+            
       - name: Create Deployment
         uses: bobheadxi/deployments@v1
         with:
@@ -63,17 +58,22 @@ jobs:
 
       - name: Slack Final Status
         if: always()
+        id: status_format
+        run: echo "status_up=$(echo ${{ job.status }} | tr '[:lower:]' '[:upper:]')" >> $GITHUB_OUTPUT
+
+      - name: Send Final Slack
+        if: always()
         uses: slackapi/slack-github-action@v1.24.0
         env:
           SLACK_BOT_TOKEN: ${{ secrets.SLACK_BOT_TOKEN }}
         with:
-          channel_id: ${{ secrets.SLACK_CHANNEL_ID }}
+          channel-id: ${{ secrets.SLACK_CHANNEL_ID }}
           payload: |
             {
               "attachments": [
                 {
                   "color": "${{ job.status == 'success' && '#36a64f' || '#ff0000' }}",
-                  "text": "*DEPLOYMENT ${{ job.status }}!*\nSERVER: AZURE TEST SERVER\nRUN BY: *${{ steps.actor.outputs.name }}*${{ steps.prinfo.outputs.merged }}"
+                  "text": "*DEPLOYMENT ${{ steps.status_format.outputs.status_up }}!*\nSERVER: AZURE TEST SERVER\nRUN BY: *${{ steps.format.outputs.actor_up }}*${{ steps.format.outputs.merged }}"
                 }
               ]
             }
